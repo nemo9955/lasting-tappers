@@ -5,11 +5,14 @@ threadsafe: true
 
 # Handlers match in order, put above the default handler.
 handlers:
-- url: /stylesheets
-  static_dir: stylesheets
+#- url: /stylesheets
+#  static_dir: guestbook/stylesheets
 
-- url: /.*
-  script: guestbook.app
+- url: /static
+  static_dir: static
+  
+- url: .*
+  script: tappers.app
 
 libraries:
 - name: webapp2
