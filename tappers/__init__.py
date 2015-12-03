@@ -14,8 +14,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True )
 
-
-
 class TapServer( webapp2.RequestHandler ):
     def get( self ):
         user = users.get_current_user()
@@ -23,27 +21,27 @@ class TapServer( webapp2.RequestHandler ):
         if not user:
             self.redirect( users.create_login_url( self.request.uri ) )
         else :
-            url = users.create_logout_url(self.request.uri)
+            url = users.create_logout_url( self.request.uri )
             url_linktext = 'Logout'
 
             temp_vals = {
-                   "user": ""+ user.nickname() ,
+                   "user": "" + user.nickname() ,
                    "logg":{"url":url, "text":url_linktext}
                    }
             template = JINJA_ENVIRONMENT.get_template( "templates/GameCanvas.html" )
-            print "-----------"
-            print self.request
-            print "-----------"
             self.response.write( template.render( temp_vals ) )
-    def post(self):
-        logging.debug('POST')
-    
-    def put(self):
-        logging.debug('PUT')
-    
-    def delete(self):
-        logging.debug('DELEE')
-        
+#             print "-----------"
+#             print self.request
+#             print "-----------"
+    def post( self ):
+        logging.debug( 'POST' )
+
+    def put( self ):
+        logging.debug( 'PUT' )
+
+    def delete( self ):
+        logging.debug( 'DELEE' )
+
 
 app = webapp2.WSGIApplication( [
     ( '/', TapServer ),
