@@ -1,10 +1,10 @@
-version: alpha-1
 runtime: python27
 api_version: 1
 threadsafe: true
+# application: lasting-tappers
 
-#env_variables:
-#   GAE_USE_SOCKETS_HTTPLIB : 'anyvalue'
+env_variables:
+   GAE_USE_SOCKETS_HTTPLIB : 'anyvalue'
    
 # Handlers match in order, put above the default handler.
 handlers:
