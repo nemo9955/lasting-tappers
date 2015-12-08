@@ -33,6 +33,7 @@ function startSesion(playerName) {
 	playerID.child("name").set(playerName);
 	playerID.child("color").set(getRandomColor());
 	playerID.child("status").set("playng")
+	playerID.child("startedAt").set(Firebase.ServerValue.TIMESTAMP)
 
 	setCallBacks();
 
@@ -44,15 +45,23 @@ function startSesion(playerName) {
 }
 function KeyDownEvents(event) {
 	var kval = String.fromCharCode(event.keyCode)
-	if (players && players[playerID.key()] && players[playerID.key()]["status"] === "playng")
-		if (gameTape[currentRow].keys != null && gm.KEYS.indexOf(kval) != -1)
-			if (gameTape[currentRow].keys.indexOf(kval) != -1) {
-				currentRow++;
-				playerID.child("progress").set(currentRow)
-			} else {
-				console.log("YOU LOSE !!!!!")
-				playerID.child("status").set("lost")
-			}
+	if (players && players[playerID.key()])
+		if (players[playerID.key()]["status"] === "playng")
+			if (gm.KEYS.indexOf(kval) != -1)
+				if (gameTape[currentRow] != null)
+					if (gameTape[currentRow].keys.indexOf(kval) != -1) {
+						currentRow++;
+						playerID.child("progress").set(currentRow)
+						if (gameTape[currentRow] == null) {
+							console.log("WINNER !!!")
+							playerID.child("status").set("winner")
+							playerID.child("endedAt").set(Firebase.ServerValue.TIMESTAMP)
+						}
+					} else {
+						console.log("YOU LOST !!!!!")
+						playerID.child("status").set("lost")
+						playerID.child("endedAt").set(Firebase.ServerValue.TIMESTAMP)
+					}
 }
 // render
 function render() {
@@ -78,7 +87,7 @@ function render() {
 			ctx.fillRect(gm.boardWidth + i, ry, sz, gm.tileHeight)
 			i += sz
 
-//			console.log(mpp)
+			// console.log(mpp)
 		}
 	}
 	// {
@@ -95,11 +104,50 @@ function render() {
 		drawRow(i, gameTape[i]);
 
 	if (players && players[playerID.key()] && players[playerID.key()]["status"] === "lost") {
-		ctx.font = "70px Arial"
-		ctx.fillStyle = "red";
-		ctx.strokeText("You Lost !!!", 100, 100)
-		ctx.fillStyle = "gray";
-		ctx.fillText("You Lost !!!", 100, 100)
+		printBigText(100, 100, "You Lost !", "red");
+	}
+
+}
+
+function printBigText(x, y, msg, color) {
+	ctx.font = "70px Arial"
+	ctx.fillStyle = "black";
+	ctx.strokeText(msg, x, y);
+	ctx.fillStyle = color;
+	ctx.fillText(msg, x, y);
+
+}
+
+function updateLeaderboard() {
+
+	var sor = []
+	for (p in players)
+		sor.push([ players[p].progress, players[p] ])
+	sor.sort(function(b, a) {
+		return a[0] - b[0]
+	})
+
+	var l = document.getElementById("players")
+	l.innerHTML = ""
+	for (p in sor) {
+		var pl = sor[p][1]
+		var st = "";
+		st += pl.name;
+		st += " : ";
+		st += pl.progress;
+		st += " , ";
+		st += pl.startedAt;
+
+		st += "" + pl.startedAt;
+		st += " time ";
+
+		var e = document.createElement("LI")
+		e.innerHTML = st
+		if (pl.status == "lost")
+			e.style.color = "red"
+		if (pl.status == "winner")
+			e.style.color = "green"
+		l.appendChild(e)
 	}
 
 }
@@ -194,7 +242,7 @@ function setCallBacks() {
 
 	thePlayers.on("value", function(snap) {
 		players = snap.val();
-
+		updateLeaderboard();
 	});
 
 	thePlayers.on("child_removed", function(snap) {

@@ -11,9 +11,10 @@ import random
 from firebaseWraper import Firebase
 
 
-def createTiles():
+def createTiles( ln ):
     brd = []
-    for i in range( 100 ):
+    if ln == "" : ln = 50
+    for i in range( int( ln ) ):
         columns = 4 + i - i  # Math.round(Math.random() * 2) + 5
         tap = random.randrange( columns )
 
@@ -26,13 +27,15 @@ def createTiles():
 
 
 class FirebaseTest( webapp2.RequestHandler ):
-    def get( self ):
+    def get( self  ):
+        brdLen = self.request.get("length")
 #         logging.info( "\n\n\n***********************" )
         fb = Firebase( "crackling-fire-8175.firebaseio.com" )
 #         fb.delete("board")
-        fb.set( "board", createTiles() )
+        fb.set( "board", createTiles( brdLen ) )
+        self.redirect( "/" )
 
 
 app = webapp2.WSGIApplication( [
-    ( '/testFB', FirebaseTest ),
+    ( '/testFB', FirebaseTest )
 ], debug=True )
