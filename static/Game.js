@@ -14,7 +14,7 @@ var currentRow = 0;
 
 var gm = {
 	keyMode : 0,
-	KEYS : "qwop".toUpperCase(),
+	KEYS : "qcwvobpn".toUpperCase(),
 	boardWidth : 600,
 	tileHeight : 50,
 }
@@ -33,7 +33,6 @@ function startSesion(playerName) {
 	playerID.child("name").set(playerName);
 	playerID.child("color").set(getRandomColor());
 	playerID.child("status").set("playng")
-	playerID.child("startedAt").set(Firebase.ServerValue.TIMESTAMP)
 
 	setCallBacks();
 
@@ -55,8 +54,11 @@ function KeyDownEvents(event) {
 						if (gameTape[currentRow] == null) {
 							console.log("WINNER !!!")
 							playerID.child("status").set("winner")
-							playerID.child("endedAt").set(Firebase.ServerValue.TIMESTAMP)
 						}
+						if (currentRow == 1)
+							playerID.child("startedAt").set(new Date().getTime())
+						playerID.child("endedAt").set(Firebase.ServerValue.TIMESTAMP)
+
 					} else {
 						console.log("YOU LOST !!!!!")
 						playerID.child("status").set("lost")
@@ -132,21 +134,28 @@ function updateLeaderboard() {
 	for (p in sor) {
 		var pl = sor[p][1]
 		var st = "";
-		st += pl.name;
-		st += " : ";
-		st += pl.progress;
-		st += " , ";
-		st += pl.startedAt;
+		var delta = (pl.endedAt - pl.startedAt)/1000;
 
-		st += "" + pl.startedAt;
-		st += " time ";
+		st += pl.name;
+		st += " : row ";
+		st += pl.progress;
+		st += " , avg speed : ~";
+		if (pl.progress == 0)
+			st += "0";
+		else
+			st += (pl.progress / delta ).toFixed(3);
+		st += " row/s.";
 
 		var e = document.createElement("LI")
-		e.innerHTML = st
 		if (pl.status == "lost")
 			e.style.color = "red"
 		if (pl.status == "winner")
 			e.style.color = "green"
+		if (pl.status != "playng") {
+			st += " </br>     Total time: " + delta + " sec."
+		}
+
+		e.innerHTML = st
 		l.appendChild(e)
 	}
 
