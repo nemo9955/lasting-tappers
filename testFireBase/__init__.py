@@ -8,28 +8,14 @@ import webapp2
 from google.appengine.api import urlfetch
 import json
 import random
-from firebaseWraper import Firebase
-
-
-def createTiles( ln ):
-    brd = []
-    if ln == "" : ln = 50
-    for i in range( int( ln ) ):
-        columns = 4 + i - i  # Math.round(Math.random() * 2) + 5
-        tap = random.randrange( columns )
-
-        mp = {}
-        mp["size"] = columns
-        mp["chosen"] = -1
-        mp["column"] = tap
-        brd.append( mp )
-    return brd
+from utils.firebaseWraper import Firebase
+from utils import createTiles
 
 
 class FirebaseTest( webapp2.RequestHandler ):
-    def get( self  ):
-        brdLen = self.request.get("length")
-#         logging.info( "\n\n\n***********************" )
+    def get( self , nr ):
+        brdLen = int( nr, 10 )
+#         logging.info( "\n\n\n***********************  "+nr  )
         fb = Firebase( "crackling-fire-8175.firebaseio.com" )
 #         fb.delete("board")
         fb.set( "board", createTiles( brdLen ) )
@@ -37,5 +23,5 @@ class FirebaseTest( webapp2.RequestHandler ):
 
 
 app = webapp2.WSGIApplication( [
-    ( '/testFB', FirebaseTest )
+    ( '/testFB/([^/]+)', FirebaseTest )
 ], debug=True )

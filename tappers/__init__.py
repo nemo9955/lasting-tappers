@@ -4,18 +4,14 @@ Created on Nov 19, 2015
 @author: Mogoi Adrian
 '''
 import os
-import jinja2
 import webapp2
-from google.appengine.api import users
 import logging
+from google.appengine.api import users
+from utils import  getJTemplate
 
-JINJA_ENVIRONMENT = jinja2.Environment( 
-    loader=jinja2.FileSystemLoader( os.path.join( os.path.dirname( __file__ ), os.pardir ) ),
-    extensions=['jinja2.ext.autoescape'],
-    autoescape=True )
 
 class TapServer( webapp2.RequestHandler ):
-    def get( self ):
+    def get( self , room ):
         user = users.get_current_user()
 
         if not user:
@@ -28,21 +24,11 @@ class TapServer( webapp2.RequestHandler ):
                    "user": "" + user.nickname() ,
                    "logg":{"url":url, "text":url_linktext}
                    }
-            template = JINJA_ENVIRONMENT.get_template( "templates/GameCanvas.html" )
+            template = getJTemplate( "GameCanvas.html" )
             self.response.write( template.render( temp_vals ) )
-#             print "-----------"
-#             print self.request
-#             print "-----------"
-    def post( self ):
-        logging.debug( 'POST' )
 
-    def put( self ):
-        logging.debug( 'PUT' )
-
-    def delete( self ):
-        logging.debug( 'DELEE' )
 
 
 app = webapp2.WSGIApplication( [
-    ( '/', TapServer ),
+    ( '/([^/]+)', TapServer ),
 ], debug=True )
