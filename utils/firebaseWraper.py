@@ -26,6 +26,9 @@ class Firebase( object ):
 
     def set( self, node, payload ):
         self.request( "PUT", node, payload )
-    
+
+    def get( self, node ):
+        self.request( "GET", node, None )
+
     def delete( self, node ):
-        self.request( "DELETE", node,None )
+        self.request( "DELETE", node, None )

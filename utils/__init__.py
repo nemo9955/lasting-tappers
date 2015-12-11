@@ -14,9 +14,9 @@ Jinja = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True )
 
-def getJTemplate(page):
-    
-    return Jinja.get_template(_templates+page)
+def getJTemplate( page ):
+
+    return Jinja.get_template( _templates + page )
 
 
 def createTiles( ln ):

@@ -4,9 +4,9 @@
 
 var c
 var ctx
-var fb = new Firebase('https://crackling-fire-8175.firebaseio.com//');
-var theBoard = fb.child("board")
-var thePlayers = fb.child("players")
+var fb;
+var theBoard;
+var thePlayers;
 var gameTape = []
 var players = {};
 var playerID;
@@ -19,11 +19,19 @@ var gm = {
 	tileHeight : 50,
 }
 
-function startSesion(playerName) {
+function startSesion(playerName, room) {
+	playerName = playerName.trim()
+	room = room.trim()
+	// console.log("_" + playerName + "_")
+	// console.log("_" + room + "_")
 	c = document.getElementById("myCanvas");
 	ctx = c.getContext("2d");
 	c.setAttribute('tabindex', '0');
 	c.focus();
+
+	fb = new Firebase('https://crackling-fire-8175.firebaseio.com//' + room + "//");
+	theBoard = fb.child("board")
+	thePlayers = fb.child("players")
 
 	if (playerName == "")
 		playerName = "Annon"
@@ -134,7 +142,7 @@ function updateLeaderboard() {
 	for (p in sor) {
 		var pl = sor[p][1]
 		var st = "";
-		var delta = (pl.endedAt - pl.startedAt)/1000;
+		var delta = (pl.endedAt - pl.startedAt) / 1000;
 
 		st += pl.name;
 		st += " : row ";
@@ -143,7 +151,7 @@ function updateLeaderboard() {
 		if (pl.progress == 0)
 			st += "0";
 		else
-			st += (pl.progress / delta ).toFixed(3);
+			st += (pl.progress / delta).toFixed(3);
 		st += " row/s.";
 
 		var e = document.createElement("LI")
@@ -224,9 +232,15 @@ function drawRow(row, det) {
 
 function setCallBacks() {
 
-	fb.child(".info/connected").on("value", function(snap) {
+	fb.parent().child(".info/connected").on("value", function(snap) {
 		if (snap.val()) {
 			playerID.onDisconnect().remove();
+
+//			fb.onDisconnect().remove();
+
+//			thePlayers.once('value', function(snap) {
+//				console.log(" hsdfvbhj sdvhj " + snap.val())
+//			})
 		}
 	});
 
@@ -255,7 +269,7 @@ function setCallBacks() {
 	});
 
 	thePlayers.on("child_removed", function(snap) {
-		delete players[snap.key()]
+		delete players[snap.key()];
 	});
 
 	playerID.child("progress").on("value", function(snap) {
