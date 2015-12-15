@@ -45,11 +45,13 @@ class RoomPage( webapp2.RequestHandler ):
         rID = "5M29YJ6"  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
-        game = "/" + rID + "/game"
-        fb.set( game, mp )
-        board = "/" + rID + "/board"
-        fb.set( board, createTiles( mp["length"] ) )
+#         game = "/" + rID + "/game"
+#         fb.set( game, mp )
+#         board = "/" + rID + "/board"
+#         fb.set( board, createTiles( mp["length"] ) )
 
+        dataa = {"game":mp , "board":createTiles( mp["length"] )}
+        fb.set(rID, dataa)
 
         templ = getJTemplate( "RoomPage.html" )
         self.response.write( templ.render( id=rID ) )

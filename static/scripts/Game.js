@@ -232,17 +232,24 @@ function drawRow(row, det) {
 
 function setCallBacks() {
 
-	fb.parent().child(".info/connected").on("value", function(snap) {
-		if (snap.val()) {
-			playerID.onDisconnect().remove();
-
-//			fb.onDisconnect().remove();
-
-//			thePlayers.once('value', function(snap) {
-//				console.log(" hsdfvbhj sdvhj " + snap.val())
-//			})
-		}
-	});
+	playerID.onDisconnect().remove();
+//	thePlayers.onDisconnect().remove(function(err){fb.push("ceva "+players )});
+	
+	
+//	fb.parent().child(".info/connected").on("value", function(snap) {
+//		if (snap.val()) {
+//
+//			// N O P E
+//			// O
+//			// p
+//			// E
+//			// TODO , FIXME , #NOPE , #SPIDERS_IN_A_BOX
+//			/** //deletes the whole ROOM when ANY single person disconnects */
+//			//fb.onDisconnect().remove();
+//			// THIS LINE, NO BUNENO !!!
+//
+//		}
+//	});
 
 	var cellListener = function(snap) {
 		gameTape[snap.key()] = snap.val()
@@ -266,6 +273,14 @@ function setCallBacks() {
 	thePlayers.on("value", function(snap) {
 		players = snap.val();
 		updateLeaderboard();
+
+	});
+
+	thePlayers.on("child_added", function(snap) {
+		thePlayers.on("value", function(snapshot) {
+			var data = snapshot.numChildren();
+			console.log("Players : " + data)
+		});
 	});
 
 	thePlayers.on("child_removed", function(snap) {
