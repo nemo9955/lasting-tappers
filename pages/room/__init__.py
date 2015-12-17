@@ -13,12 +13,21 @@ from utils import createTiles
 
 URL_LENGTH = 7
 
+
+
 class RoomPage( webapp2.RequestHandler ):
-    def get( self ):
-        user = users.get_current_user()
-        print "------------    ROOOMM : ", user.nickname()
+    def printPage( self , rID=None ):
         templ = getJTemplate( "RoomPage.html" )
-        self.response.write( templ.render() )
+        temp_vals = {
+               "loggout":users.create_logout_url( '/' ),
+                   }
+        if rID is not None :
+            temp_vals["id"] = rID
+        self.response.write( templ.render( temp_vals ) )
+
+
+    def get( self ):
+        self.printPage()
 
     def post( self ):
         mp = {}
@@ -34,27 +43,24 @@ class RoomPage( webapp2.RequestHandler ):
                 print "Improbability drive !!!!"
             else :
                 break
-        #
-        #
-        #
-        #
-        #
+
         #
         # R E M O V E   T H I S
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-        rID = "5M29YJ6"  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+        rID = "4M29YJ2"  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
-#         game = "/" + rID + "/game"
-#         fb.set( game, mp )
-#         board = "/" + rID + "/board"
-#         fb.set( board, createTiles( mp["length"] ) )
-
+        mp["room"] = rID
         dataa = {"game":mp , "board":createTiles( mp["length"] )}
-        fb.set(rID, dataa)
+        fb.set( rID, dataa )
 
-        templ = getJTemplate( "RoomPage.html" )
-        self.response.write( templ.render( id=rID ) )
+
+        mp["user"] = users.get_current_user().nickname()
+        for i, j in mp.items() :
+#             self.response.delete_cookie(i)
+            self.response.set_cookie( i, str( j ), path=("/" + rID) ,max_age=36000)
+
+        self.printPage( rID=rID )
 
 
 app = webapp2.WSGIApplication( [

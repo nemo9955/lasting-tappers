@@ -19,11 +19,21 @@ var gm = {
 	tileHeight : 50,
 }
 
-function startSesion(playerName, room) {
-	playerName = playerName.trim()
-	room = room.trim()
-	// console.log("_" + playerName + "_")
-	// console.log("_" + room + "_")
+function getCookie(nm) {
+	var s = document.cookie
+	s = s.split(nm + "=")[1]
+	var r = s.split(";")[0]
+
+	return r
+}
+
+function startSesion() {
+	var playerName = getCookie("user");
+	var room = getCookie("room");
+
+	if (playerName == "")
+		playerName = "Annon"
+
 	c = document.getElementById("myCanvas");
 	ctx = c.getContext("2d");
 	c.setAttribute('tabindex', '0');
@@ -32,9 +42,6 @@ function startSesion(playerName, room) {
 	fb = new Firebase('https://crackling-fire-8175.firebaseio.com//' + room + "//");
 	theBoard = fb.child("board")
 	thePlayers = fb.child("players")
-
-	if (playerName == "")
-		playerName = "Annon"
 
 	playerID = thePlayers.push();
 	playerID.child("progress").set(0);
@@ -48,30 +55,62 @@ function startSesion(playerName, room) {
 	// setTimeout(createTiles, 0);
 
 	window.addEventListener("keydown", KeyDownEvents, true);
+	window.addEventListener("mousedown", mouseClick, false);
 
 }
+
+function canPlay() {
+
+	if (gameTape[currentRow] == null)
+		return false;
+
+	return (players && players[playerID.key()] && players[playerID.key()]["status"] === "playng")
+}
+
+function mouseClick(event) {
+	var x = event.clientX - document.documentElement.scrollLeft - c.offsetLeft;
+	var y = event.clientY - document.documentElement.scrollTop - c.offsetTop;
+
+	if (!canPlay() || x > gm.boardWidth)
+		return;
+
+	var i = Math.floor(x / (gm.boardWidth / gameTape[currentRow].size));
+
+	doStep(gameTape[currentRow].column == i)
+
+}
+
+function doStep(quality) {
+	if (quality)
+		goodStep()
+	else
+		badStep()
+	playerID.child("endedAt").set(Firebase.ServerValue.TIMESTAMP)
+}
+
+function goodStep() {
+	currentRow++;
+	playerID.child("progress").set(currentRow)
+	if (gameTape[currentRow] == null) {
+		console.log("WINNER !!!")
+		playerID.child("status").set("winner")
+	}
+	if (currentRow == 1)
+		playerID.child("startedAt").set(new Date().getTime())
+
+}
+
+function badStep() {
+
+	console.log("YOU LOST !!!!!")
+	playerID.child("status").set("lost")
+}
+
 function KeyDownEvents(event) {
 	var kval = String.fromCharCode(event.keyCode)
-	if (players && players[playerID.key()])
-		if (players[playerID.key()]["status"] === "playng")
-			if (gm.KEYS.indexOf(kval) != -1)
-				if (gameTape[currentRow] != null)
-					if (gameTape[currentRow].keys.indexOf(kval) != -1) {
-						currentRow++;
-						playerID.child("progress").set(currentRow)
-						if (gameTape[currentRow] == null) {
-							console.log("WINNER !!!")
-							playerID.child("status").set("winner")
-						}
-						if (currentRow == 1)
-							playerID.child("startedAt").set(new Date().getTime())
-						playerID.child("endedAt").set(Firebase.ServerValue.TIMESTAMP)
+	if (canPlay() && gm.KEYS.indexOf(kval) != -1)
+		doStep(gameTape[currentRow].keys.indexOf(kval) != -1)
 
-					} else {
-						console.log("YOU LOST !!!!!")
-						playerID.child("status").set("lost")
-						playerID.child("endedAt").set(Firebase.ServerValue.TIMESTAMP)
-					}
 }
 // render
 function render() {
@@ -230,42 +269,50 @@ function drawRow(row, det) {
 	}
 }
 
+
+
+
 function setCallBacks() {
 
 	playerID.onDisconnect().remove();
-//	thePlayers.onDisconnect().remove(function(err){fb.push("ceva "+players )});
-	
-	
-//	fb.parent().child(".info/connected").on("value", function(snap) {
-//		if (snap.val()) {
-//
-//			// N O P E
-//			// O
-//			// p
-//			// E
-//			// TODO , FIXME , #NOPE , #SPIDERS_IN_A_BOX
-//			/** //deletes the whole ROOM when ANY single person disconnects */
-//			//fb.onDisconnect().remove();
-//			// THIS LINE, NO BUNENO !!!
-//
-//		}
-//	});
+	// thePlayers.onDisconnect().remove(function(err){fb.push("ceva "+players
+	// )});
 
-	var cellListener = function(snap) {
-		gameTape[snap.key()] = snap.val()
-		// var st = "qwertyuiop".toUpperCase();
+	// fb.parent().child(".info/connected").on("value", function(snap) {
+	// if (snap.val()) {
+	//
+	// // N O P E
+	// // O
+	// // p
+	// // E
+	// // TODO , FIXME , #NOPE , #SPIDERS_IN_A_BOX
+	// /** //deletes the whole ROOM when ANY single person disconnects */
+	// //fb.onDisconnect().remove();
+	// // THIS LINE, NO BUNENO !!!
+	//
+	// }
+	// });
+
+	var cellListener = function(snap, ind) {
+		if (snap != null)
+			gameTape[ind] = snap
+
 		var st = gm.KEYS
-		var subdiv = gameTape[snap.key()].size;
-		var nr = gameTape[snap.key()].column + 1
-		gameTape[snap.key()]["keys"] = st.substring(st.length / subdiv * (nr - 1), st.length / subdiv * nr)
+		var subdiv = gameTape[ind].size;
+		var nr = gameTape[ind].column + 1
+		gameTape[ind]["keys"] = st.substring(st.length / subdiv * (nr - 1), st.length / subdiv * nr)
 	}
 
-	theBoard.on("child_added", function(snap) {
-		cellListener(snap)
+	theBoard.on("value", function(snap) {
+		gameTape = snap.exportVal()
+		for (i in snap.val())
+			cellListener(null, i)
 	});
+	
 	theBoard.on("child_changed", function(snap) {
-		cellListener(snap)
+		cellListener(snap.val(), snap.key())
 	});
+	
 	theBoard.on("child_removed", function(snap) {
 		delete gameTape[snap.key()];
 	});
@@ -274,13 +321,6 @@ function setCallBacks() {
 		players = snap.val();
 		updateLeaderboard();
 
-	});
-
-	thePlayers.on("child_added", function(snap) {
-		thePlayers.on("value", function(snapshot) {
-			var data = snapshot.numChildren();
-			console.log("Players : " + data)
-		});
 	});
 
 	thePlayers.on("child_removed", function(snap) {

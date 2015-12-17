@@ -12,11 +12,7 @@ from utils import  getJTemplate
 
 class TapServer( webapp2.RequestHandler ):
     def get( self , room ):
-        user = users.get_current_user()
-
         temp_vals = {
-               "user": "" + user.nickname() ,
-               "room": room,
                "loggout":users.create_logout_url( '/' ),
                }
         template = getJTemplate( "GameCanvas.html" )
