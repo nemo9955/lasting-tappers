@@ -14,7 +14,8 @@
 <script src="static/scripts/Game.js" type="text/javascript"></script>
 
 </head>
-<body onload="startSesion()">
+<body onload="startSesion()" onunload="stopSession()" onclose="stopSession()">
+	<h2 id="roomName"></h2>
 
 	<canvas id="myCanvas" width="800" height="470" style="border: 1px solid #000000;"></canvas>
 

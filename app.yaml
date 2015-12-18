@@ -5,9 +5,13 @@ threadsafe: true
 
 env_variables:
    GAE_USE_SOCKETS_HTTPLIB : 'anyvalue'
-   
+
 # Handlers match in order, put above the default handler.
 handlers:
+
+- url: /tasks/deleteMonthly
+  script: tasks.deleteMonthly.app 
+  login: admin
 
 - url: /static
   static_dir: static
@@ -19,11 +23,7 @@ handlers:
 - url: /.*
   script: pages.tappers.app
   login: required
-
-#- url: /testFB/.*
-#  script: testFireBase.app 
   
-
 libraries:
 - name: webapp2
   version: latest
