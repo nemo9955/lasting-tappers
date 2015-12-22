@@ -18,7 +18,7 @@ class Firebase( object ):
 
     def request( self, method, node, payload ):
         payload = json.dumps( payload )
-        urlfetch.fetch( ( 'https://%s/%s.json?auth=%s' % ( self.url, node, self.auth ) ) if self.auth else ( 'https://%s/%s.json' % ( self.url, node ) ),
+        return urlfetch.fetch( ( 'https://%s/%s.json?auth=%s' % ( self.url, node, self.auth ) ) if self.auth else ( 'https://%s/%s.json' % ( self.url, node ) ),
                                 payload=payload, method=method )
 
     def push( self, node, payload ):
@@ -28,7 +28,10 @@ class Firebase( object ):
         self.request( "PUT", node, payload )
 
     def get( self, node ):
-        self.request( "GET", node, None )
+        return self.request( "GET", node, None ).content
+
+    def getAll( self, node ):
+        return self.request( "GET", node, None )
 
     def delete( self, node ):
         self.request( "DELETE", node, None )
