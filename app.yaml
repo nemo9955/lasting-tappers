@@ -1,7 +1,7 @@
+# application: lasting-tappers
 runtime: python27
 api_version: 1
 threadsafe: true
-# application: lasting-tappers
 
 env_variables:
    GAE_USE_SOCKETS_HTTPLIB : 'anyvalue'

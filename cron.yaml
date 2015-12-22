@@ -1,0 +1,5 @@
+cron:
+- description: remove previous month's undeleted rooms
+  url: /tasks/deleteMonthly
+  schedule: 5 of month 00:00
+

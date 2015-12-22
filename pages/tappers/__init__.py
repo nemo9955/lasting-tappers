@@ -3,7 +3,6 @@ Created on Nov 19, 2015
 
 @author: Mogoi Adrian
 '''
-import os
 import webapp2
 import logging
 from google.appengine.api import users
