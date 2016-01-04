@@ -40,7 +40,7 @@ class RoomPage( webapp2.RequestHandler ):
         while 1 :
             rid = ''.join( random.SystemRandom().choice( string.ascii_uppercase + string.digits ) for _ in range( URL_LENGTH ) )
             tst = fb.get( "/" + rid )
-            if tst != None :
+            if tst == None :
                 print "Improbability drive !!!!"
             else :
                 break
