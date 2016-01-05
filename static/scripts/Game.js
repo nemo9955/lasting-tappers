@@ -57,8 +57,8 @@ function startSesion() {
 	setInterval(render, 100);
 	// setTimeout(createTiles, 0);
 
-	window.addEventListener("keydown", KeyDownEvents, true);
-	window.addEventListener("mousedown", mouseClick, false);
+	c.addEventListener("keydown", KeyDownEvents, true);
+	c.addEventListener("mousedown", mouseClick, false);
 }
 
 function stopSession() {

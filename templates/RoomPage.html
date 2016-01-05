@@ -10,26 +10,22 @@
 <title>Room Selection</title>
 </head>
 <body>
+	<div align="center">
+		Create Room : <br> <br>
+		<form action="/" method="post">
 
-	Create Room :
-	<br>
-	<br>
-	<form action="/" method="post">
+			Name: <br>
+			<input type="text" name="name">
+			<br> <br> Length:<br>
+			<input type="number" value="50" name="length" min=5 maxlength="2">
+			<br> <br>
+			<input type="submit" value="Create Room">
 
-		Name: <br> <input type="text" name="name"><br> <br> Length: <input type="number" value="50" name="length" min=5><br> <br> <input type="submit" value="Submit">
+		</form>
 
-	</form>
-
-	<br>
-	<br> {% if id is defined %} Game ID is {{ id }}
-	<br>
-	<br> localhost:8080/{{ id }}
-	<br>
-	<br> http://lasting-tappers.appspot.com/{{ id }} {% endif %}
-	
-	<br>
-	<br>
+		<br> <br> {% if id is defined %} Game ID is {{ id }} <br> <br> localhost:8080/{{ id }} <br> <br> http://lasting-tappers.appspot.com/{{ id }} {% endif %} <br> <br>
+	</div>
 	<a href="{{loggout}}"> Log Out </a>
-	
+
 </body>
 </html>
