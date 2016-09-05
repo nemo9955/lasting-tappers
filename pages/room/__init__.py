@@ -4,14 +4,22 @@ Created on Dec 10, 2015
 @author: Mogoi Adrian
 '''
 
+
 import webapp2
 import string, random, datetime
 from google.appengine.api import users
 from utils import getJTemplate
 from utils.firebaseWraper import Firebase
 from utils import createTiles
+from google.appengine.ext import ndb
+
 
 URL_LENGTH = 7
+
+
+class Test(ndb.Model):
+    content = ndb.StringProperty()
+    date = ndb.DateTimeProperty(auto_now_add=True)
 
 
 
@@ -27,6 +35,14 @@ class RoomPage( webapp2.RequestHandler ):
 
 
     def get( self ):
+        # tst = Test()
+        # tst.content = "jksdlfhnsdj fhsdj"
+        # tstKey = tst.put()
+        # print tstKey , "-----------"
+
+        # if users.get_current_user() is None :
+        #     self.response.write( users.create_login_url() )
+        #     return
         self.printPage()
 
     def post( self ):

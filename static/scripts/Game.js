@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 var c
@@ -15,10 +15,10 @@ var currentRow = 0;
 var noOfPlayers = -1
 
 var gm = {
-	keyMode : 0,
-	KEYS : "qcwvobpn".toUpperCase(),
-	boardWidth : 600,
-	tileHeight : 50,
+	keyMode: 0,
+	KEYS: "qcwvobpn".toUpperCase(),
+	boardWidth: 600,
+	tileHeight: 50,
 }
 
 function getCookie(nm) {
@@ -41,7 +41,17 @@ function startSesion() {
 	c.setAttribute('tabindex', '0');
 	c.focus();
 
-	fb = new Firebase('https://crackling-fire-8175.firebaseio.com//' + (new Date().getMonth() + 1) + "//" + room + "//");
+	var config = {
+		apiKey: "AIzaSyDJZImcc9GgeiBI3IMVln-6AklSQJ1O5gs",
+		authDomain: "crackling-fire-8175.firebaseapp.com",
+		databaseURL: "https://crackling-fire-8175.firebaseio.com",
+		storageBucket: "crackling-fire-8175.appspot.com",
+	};
+	firebase.initializeApp(config)
+	fb = firebase.database().ref().child((new Date().getMonth() + 1)).child(room);
+
+
+	// fb = new Firebase('https://crackling-fire-8175.firebaseio.com//' + (new Date().getMonth() + 1) + "//" + room + "//");
 	theBoard = fb.child("board")
 	thePlayers = fb.child("players")
 	theGame = fb.child("game")
@@ -71,7 +81,7 @@ function canPlay() {
 	if (gameTape[currentRow] == null)
 		return false;
 
-	return (players && players[playerID.key()] && players[playerID.key()]["status"] === "playng")
+	return (players && players[playerID.key] && players[playerID.key]["status"] === "playng")
 }
 
 function mouseClick(event) {
@@ -129,7 +139,7 @@ function render() {
 		if (mpp[players[pl].progress])
 			mpp[players[pl].progress].push(players[pl])
 		else
-			mpp[players[pl].progress] = [ players[pl] ]
+			mpp[players[pl].progress] = [players[pl]]
 
 	for (ls in mpp) {
 		var i = 0
@@ -143,10 +153,10 @@ function render() {
 
 		}
 	}
-	for ( var i in gameTape)
+	for (var i in gameTape)
 		drawRow(i, gameTape[i]);
 
-	if (players && players[playerID.key()] && players[playerID.key()]["status"] === "lost") {
+	if (players && players[playerID.key] && players[playerID.key]["status"] === "lost") {
 		printBigText(100, 100, "You Lost !", "red");
 	}
 
@@ -165,8 +175,8 @@ function updateLeaderboard() {
 
 	var sor = []
 	for (p in players)
-		sor.push([ players[p].progress, players[p] ])
-	sor.sort(function(b, a) {
+		sor.push([players[p].progress, players[p]])
+	sor.sort(function (b, a) {
 		return a[0] - b[0]
 	})
 
@@ -209,15 +219,15 @@ function drawRectangle(row, column, chosen, det) {
 	var rx = rw * column;
 
 	switch (chosen) {
-	case -1:
-		ctx.fillStyle = "red";
-		break;
-	case 0:
-		ctx.fillStyle = "transparent";
-		break;
-	default:
-		ctx.fillStyle = "grey";
-		break;
+		case -1:
+			ctx.fillStyle = "red";
+			break;
+		case 0:
+			ctx.fillStyle = "transparent";
+			break;
+		default:
+			ctx.fillStyle = "grey";
+			break;
 	}
 	var pd = 3
 	ctx.fillRect(rx + pd, ry + pd, rw - (pd * 2), rh - (pd * 2))
@@ -271,7 +281,7 @@ function setCallBacks() {
 	// }
 	// });
 
-	var cellListener = function(snap, ind) {
+	var cellListener = function (snap, ind) {
 		if (snap != null)
 			gameTape[ind] = snap
 
@@ -281,37 +291,37 @@ function setCallBacks() {
 		gameTape[ind]["keys"] = st.substring(st.length / subdiv * (nr - 1), st.length / subdiv * nr)
 	}
 
-	theBoard.on("value", function(snap) {
+	theBoard.on("value", function (snap) {
 		gameTape = snap.exportVal()
 		for (i in snap.val())
 			cellListener(null, i)
 	});
 
-	theBoard.on("child_changed", function(snap) {
-		cellListener(snap.val(), snap.key())
+	theBoard.on("child_changed", function (snap) {
+		cellListener(snap.val(), snap.key)
 	});
 
-	theBoard.on("child_removed", function(snap) {
-		delete gameTape[snap.key()];
+	theBoard.on("child_removed", function (snap) {
+		delete gameTape[snap.key];
 	});
 
-	theGame.on("value", function(snap) {
+	theGame.on("value", function (snap) {
 		document.getElementById("roomName").innerHTML = snap.val().name
 		console.log(snap.val())
 	});
 
-	thePlayers.on("value", function(snap) {
+	thePlayers.on("value", function (snap) {
 		players = snap.val();
 		updateLeaderboard();
 		noOfPlayers = snap.numChildren()
 	});
 
-	thePlayers.on("child_removed", function(snap) {
-		delete players[snap.key()];
+	thePlayers.on("child_removed", function (snap) {
+		delete players[snap.key];
 		noOfPlayers--;
 	});
 
-	playerID.child("progress").on("value", function(snap) {
+	playerID.child("progress").on("value", function (snap) {
 		currentRow = snap.val()
 	});
 }

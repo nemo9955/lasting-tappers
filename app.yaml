@@ -10,20 +10,20 @@ env_variables:
 handlers:
 
 - url: /tasks/deleteMonthly
-  script: tasks.deleteMonthly.app 
+  script: tasks.deleteMonthly.app
   login: admin
 
 - url: /static
   static_dir: static
-  
+
 - url: /
   script: pages.room.app
-  login: required
+  # login: required
 
 - url: /.*
   script: pages.tappers.app
-  login: required
-  
+  # login: required
+
 libraries:
 - name: webapp2
   version: latest
