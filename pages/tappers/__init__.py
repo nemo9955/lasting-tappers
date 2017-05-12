@@ -5,7 +5,7 @@ Created on Nov 19, 2015
 '''
 import webapp2
 import logging
-# from google.appengine.api import users
+from google.appengine.api import users
 from utils import  getJTemplate
 
 
@@ -32,7 +32,7 @@ class TapServer( webapp2.RequestHandler ):
 
         mp={}
         mp["room"] = room
-        # mp["user"] = users.get_current_user().nickname()
+        mp["user"] = users.get_current_user().nickname()
         for i, j in mp.items() :
             self.response.set_cookie( i, str( j ), path=("/" + room) ,max_age=360)
 
