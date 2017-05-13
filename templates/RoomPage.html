@@ -6,26 +6,27 @@
 <!--<script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>-->
 <!--<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="static/scripts/css/RoomPage.css">
 <meta charset="UTF-8">
 
 <title>Room Selection</title>
 </head>
-<body>
-	<div align="center">
-		Create Room : <br> <br>
-		<form action="/" method="post">
-
-			Name: <br>
-			<input type="text" name="name">
-			<br> <br> Length:<br>
-			<input type="number" value="50" name="length" min=5 maxlength="2">
-			<br> <br>
-			<input type="submit" value="Create Room">
-
+<body>		
+		
+		<form class="form-container" action="/" method="post">
+			<div class="form-title"><h2>Create Room</h2></div>
+				<div class="form-title">Name</div>
+					<input class="form-field" type="text" name="name" /><br />
+				<div class="form-title">Length</div>
+					<input class="form-field" type="number" value="50" name="length" min=5 maxlength="2"/><br />
+				<div class="submit-container">
+					<input class="submit-button" type="submit" value="Create Room" />
+			</div>
 		</form>
+		
 
 		<br> <br> {% if id is defined %} Game ID is {{ id }} <br> <br> localhost:8080/{{ id }} <br> <br> http://lasting-tappers.appspot.com/{{ id }} {% endif %} <br> <br>
-	</div>
+	
 	<a href="{{loggout}}"> Log Out </a>
 
 </body>
