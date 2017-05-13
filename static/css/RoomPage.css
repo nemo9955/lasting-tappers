@@ -101,3 +101,22 @@
    background-image: -ms-linear-gradient(top, #6aa436 0%, #8dc059 100%);
    color: #fff;
    }
+
+
+  .btn {
+  background: #3498db;
+  background: -webkit-gradient(linear, center top, center bottom, from(#917c4d), to(#ffffff));
+  background: -webkit-linear-gradient(#917c4d, #ffffff);
+  background: -moz-linear-gradient(#917c4d, #ffffff);
+  background: -o-linear-gradient(#917c4d, #ffffff);
+  background: -ms-linear-gradient(#917c4d, #ffffff);
+  background: linear-gradient(#917c4d, #ffffff);
+  -webkit-border-radius: 28;
+  -moz-border-radius: 28;
+  border-radius: 28px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+}
