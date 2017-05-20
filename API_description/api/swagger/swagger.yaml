@@ -1,0 +1,157 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Hello World App
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+
+  /:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: room
+    
+    post:
+      operationId: save
+      description: Create Room
+      parameters:
+        - name: title
+          description: Room properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Room"
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+    get:
+      operationId: getAll
+      description: get the rooms list
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetRoomsListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /{id}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: room
+    get:
+      operationId: getOne
+      description: returns RoomPage.html. The room that you can play the game.
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/GetRoomResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+          
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+        
+  # URL: /{RoomID}
+  # GET/{ID}
+  GetRoomResponse:
+    required:
+      - id
+      - title
+      - length
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      length:
+        type: number
+        
+  # URL: /            
+  # POST
+  Room:
+    type: object
+    properties:
+      title:
+        type: string
+        description: room name
+      length:
+        type: number
+        description: room length # number of colored blocks
+    required:
+      - title
+      - length
+      
+  GeneralResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        description: returns roomID if successful
+      description:
+        type: string
+        description: a short comment 
+    required:
+      - success
+      - description
+      
+  # URL: /
+  # GET
+  GetRoomsListResponse:
+    required:
+      - rooms
+    properties:
+      # The array of movies
+      rooms:
+        type: array
+        items: 
+          type: object
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            length:
+              type: number
+              
+              
+  ErrorResponse:
+    required:
+      - room
+    properties:
+      room:
+        type: string
