@@ -45,14 +45,14 @@ paths:
             $ref: "#/definitions/ErrorResponse"
             
     get:
-      operationId: getAll
-      description: get the rooms list
+      operationId: getIndexPage
+      description: get the rooms page intro
       # define the type of response for Success "200" and Error
       responses:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/GetRoomsListResponse"
+            $ref: "#/definitions/GeneralResponse"
         default:
           description: Error
           schema:
@@ -76,6 +76,24 @@ paths:
             # a pointer to a definition
             $ref: "#/definitions/GetRoomResponse"
         # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /dev:
+    # our controller name
+    x-swagger-router-controller: room
+    
+    get:
+      description: get the movies list
+      operationId: getAll
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetRoomListResponse"
         default:
           description: Error
           schema:
@@ -128,10 +146,16 @@ definitions:
     required:
       - success
       - description
-      
-  # URL: /
-  # GET
-  GetRoomsListResponse:
+
+              
+  ErrorResponse:
+    required:
+      - room
+    properties:
+      room:
+        type: string
+        
+  GetRoomListResponse:
     required:
       - rooms
     properties:
@@ -147,11 +171,3 @@ definitions:
               type: string
             length:
               type: number
-              
-              
-  ErrorResponse:
-    required:
-      - room
-    properties:
-      room:
-        type: string

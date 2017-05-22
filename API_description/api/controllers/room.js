@@ -1,8 +1,13 @@
 'use strict';
     // Include our "db"
     var db = require('../../config/db')();
+    var express = require("express");
+    var app = express();
+    var path = require("path");
+    var util = require('util');
+    var http = require('http');
     // Exports all the functions to perform on the db
-    module.exports = {save, getOne, getAll};
+    module.exports = {save, getOne,getAll , getIndexPage};
 
 
     //POST / operationId
@@ -21,6 +26,13 @@
     }
 
     //GET /room operationId
+    
     function getAll(req, res, next) {
       res.json({ rooms: db.find()});
+    }
+    
+
+    // GET "/" operationId
+    function getIndexPage(req, res, next) {
+        res.sendFile(path.join(__dirname  + "/../../../templates/RoomPage.html"));
     }
